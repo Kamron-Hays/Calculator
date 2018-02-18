@@ -2,24 +2,37 @@ var firstNumber = "";
 var secondNumber = "";
 var operator = "";
 
+function formatNumber(num)
+{
+    // round to 3 decimal places and remove trailing zeros
+    let result = parseFloat(num.toFixed(9));
+    
+    if ( result > 999999999 || result < .000000001 )
+    {
+        result = result.toExponential(3);
+    }
+
+    return result.toString();
+}
+
 function add(num1, num2)
 {
-    return (parseFloat(num1) + parseFloat(num2)).toString();
+    return formatNumber(parseFloat(num1) + parseFloat(num2));
 }
 
 function subtract(num1, num2)
 {
-    return (num1 - num2).toString();
+    return formatNumber(num1 - num2);
 }
 
 function multiply(num1, num2)
 {
-    return (num1 * num2).toString();
+    return formatNumber(num1 * num2);
 }
 
 function divide(num1, num2)
 {
-    return (num1 / num2).toString();
+    return formatNumber(num1 / num2);
 }
 
 function operate(num1, num2, op)
@@ -100,7 +113,7 @@ function handleClear()
     $('#result').text(0);
     $('#history').text("");
     firstNumber = "";
-    secondNumber = ""
+    secondNumber = "";
     operator = "";
 }
 
@@ -172,7 +185,7 @@ $(document).ready(function()
           case 43: handleOperator('+'); break;
           case 45: handleOperator('-'); break;
           case 47: handleOperator('/'); break;
-          case 48: handleNumeric1('0'); break;
+          case 48: handleNumeric('0'); break;
           case 49: handleNumeric('1'); break;
           case 50: handleNumeric('2'); break;
           case 51: handleNumeric('3'); break;
@@ -192,7 +205,7 @@ $(document).ready(function()
             handleBackspace();
             break;
           default:
-            alert('Handler for .keypress() called. - ' + event.which);
+            //alert('Handler for .keypress() called. - ' + event.which);
             break;
         }
     });
