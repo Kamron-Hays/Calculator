@@ -65,6 +65,9 @@ function operate(num1, num2, op)
 
 function handleNumeric(num)
 {
+    // Don't allow more than one decimal in a number
+    if ( num == '.' && $('#result').text().includes('.') ) { return; }
+
     if ( operator == "" )
     {
         firstNumber += num;
