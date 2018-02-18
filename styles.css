@@ -1,5 +1,5 @@
 body {
-  border: 2px black solid;
+  border: 3px silver outset;
   float: left;
 }
 
@@ -12,4 +12,34 @@ div {
   margin-left: 3px;
   margin-right: 3px;
   margin-bottom: 5px;
+}
+
+#display {
+  border: 2px silver inset;
+  margin-top: 3px;
+  margin-left: 4px;
+  margin-right: 4px;
+  text-align: right;
+}
+
+#result {
+  overflow: auto;
+  font-size: 140%;
+  font-weight: bold;
+  margin-top: 2px;
+  margin-bottom: 0;
+  margin-right: 2px;
+}
+
+#history {
+  height: 15px;
+  overflow: auto;
+  font-size: 80%;
+  margin-top: 0;
+  margin-bottom: 0;
+  margin-right: 2px;
+}
+
+#clear {
+  text-align: right;
 }

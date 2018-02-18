@@ -53,6 +53,10 @@ function handleNumeric(num)
 
 function handleOperator(op)
 {
+    let result = $('#result').text();
+    let history = $('#history').text();
+    $('#history').text(history + " " + result + " " + op);
+
     if ( firstNumber != "" && secondNumber != "" )
     {
         // perform the operation
@@ -61,7 +65,7 @@ function handleOperator(op)
     }
     else if ( firstNumber == "" )
     {
-        firstNumber =  $('#result').text();
+        firstNumber = $('#result').text();
     }
     
     operator = op;
@@ -87,11 +91,14 @@ function handleEquals()
         $('#result').text(firstNumber);
         firstNumber = "";
     }
+    
+    $('#history').text(" ");
 }
 
 function handleClear()
 {
     $('#result').text(0);
+    $('#history').text("");
     firstNumber = "";
     secondNumber = ""
     operator = "";
@@ -100,6 +107,7 @@ function handleClear()
 function handleBackspace()
 {
     let result = $('#result').text();
+    let reset = false;
     
     if ( result.length > 1 )
     {
@@ -108,20 +116,22 @@ function handleBackspace()
     else if ( result != "0" )
     {
         $('#result').text(0);
+        reset = true;
     }
     
     if ( operator == "" )
     {
-        firstNumber = $('#result').text();
+        firstNumber = reset ? "" : $('#result').text();
     }
     else
     {
-        secondNumber = $('#result').text();
+        secondNumber = reset ? "" : $('#result').text();
     }
 }
 
 $(document).ready(function()
-{    
+{
+    $('body').css("maxWidth", $('body').width());
     $('#result').text(0);
 
     $('button').on('click', function()
@@ -162,6 +172,7 @@ $(document).ready(function()
           case 43: handleOperator('+'); break;
           case 45: handleOperator('-'); break;
           case 47: handleOperator('/'); break;
+          case 48: handleNumeric1('0'); break;
           case 49: handleNumeric('1'); break;
           case 50: handleNumeric('2'); break;
           case 51: handleNumeric('3'); break;
@@ -177,7 +188,7 @@ $(document).ready(function()
             handleClear();
             break;
           case 100: // d
-          case 100: // D
+          case 68: // D
             handleBackspace();
             break;
           default:
