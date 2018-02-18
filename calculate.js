@@ -84,6 +84,14 @@ function handleOperator(op)
 {
     let result = $('#result').text();
     let history = $('#history').text();
+
+    // If an operator has already been specified
+    if ( operator != "" )
+    {
+        // delete previous operator in history
+        history = history.slice(0,-3);
+    }
+
     $('#history').text(history + " " + result + " " + op);
 
     if ( firstNumber != "" && secondNumber != "" )
