@@ -1,13 +1,14 @@
 var firstNumber = "";
 var secondNumber = "";
 var operator = "";
+error = false;
 
 function formatNumber(num)
 {
     // round to 3 decimal places and remove trailing zeros
     let result = parseFloat(num.toFixed(9));
     
-    if ( result > 999999999 || result < .000000001 )
+    if ( result > 999999999 || result < -999999999 )
     {
         result = result.toExponential(3);
     }
@@ -32,7 +33,19 @@ function multiply(num1, num2)
 
 function divide(num1, num2)
 {
-    return formatNumber(num1 / num2);
+    let result = "";
+
+    if ( num2 == "0" )
+    {
+        error = true;
+        result = "Error";
+    }
+    else
+    {
+        result = formatNumber(num1 / num2);
+    }
+    
+    return result;
 }
 
 function operate(num1, num2, op)
@@ -115,6 +128,7 @@ function handleClear()
     firstNumber = "";
     secondNumber = "";
     operator = "";
+    error = false;
 }
 
 function handleBackspace()
@@ -149,6 +163,8 @@ $(document).ready(function()
 
     $('button').on('click', function()
     {
+        if ( error ) { handleClear(); }
+
         switch ( this.name )
         {
           case '+':
@@ -178,6 +194,8 @@ $(document).ready(function()
     
     $(document).keypress(function(event)
     {
+        if ( error ) { handleClear(); }
+
         switch ( event.which )
         {
           case 13: handleEquals(); break;
