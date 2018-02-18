@@ -153,11 +153,18 @@ function handleBackspace()
     if ( result.length > 1 )
     {
         $('#result').text(result.slice(0,-1));
+        
+        // Handle trailing negative sign
+        if ( $('#result').text() == '-' )
+        {
+            $('#result').text(0);
+            reset = true; // allow a new number to replace 0
+        }
     }
     else if ( result != "0" )
     {
         $('#result').text(0);
-        reset = true;
+        reset = true; // allow a new number to replace 0
     }
     
     if ( operator == "" )
