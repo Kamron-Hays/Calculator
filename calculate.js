@@ -1,7 +1,10 @@
 var firstNumber = "";
 var secondNumber = "";
+var implicitNumber = "";
 var operator = "";
-error = false;
+var implicitOperator = "";
+var lastChar = "";
+var error = false;
 
 function formatNumber(num)
 {
@@ -63,20 +66,40 @@ function operate(num1, num2, op)
     return result;
 }
 
+function isOperator(ch)
+{
+    let isOp = false;
+
+    if ( ch == '+' || ch == '-' || ch == '*' || ch == '/' )
+    {
+        isOp = true;
+    }
+    
+    return isOp;
+}
+
 function handleNumeric(num)
 {
     // Don't allow more than one decimal in a number
     if ( num == '.' && $('#result').text().includes('.') ) { return; }
 
+    // Don't allow leading zeros
+    if ( num == '0' && $('#result').text() == '0' ) { return; }
+    
     if ( operator == "" )
     {
+        if ( firstNumber == "" && num == '.' ) { firstNumber = "0"; }
+        else if ( firstNumber == "0" ) { firstNumber = ""; }
         firstNumber += num;
         $('#result').text(firstNumber);
     }
     else
     {
+        if ( secondNumber == "" && num == '.' ) { secondNumber = "0"; }
+        else if ( secondNumber == "0" ) { secondNumber = ""; }
         secondNumber += num;
         $('#result').text(secondNumber);
+        implicitNumber = secondNumber;
     }
 }
 
@@ -86,7 +109,7 @@ function handleOperator(op)
     let history = $('#history').text();
 
     // If an operator has already been specified
-    if ( operator != "" )
+    if ( isOperator(lastChar) )
     {
         // replace previous operator in history
         history = history.slice(0,-1);
@@ -110,11 +133,17 @@ function handleOperator(op)
     
     operator = op;
     secondNumber = "";
+    implicitNumber = "";
 }
 
 function handleEquals()
 {
-    if ( operator != "")
+    if ( operator == "" && implicitOperator != "" )
+    {
+        operator = implicitOperator;
+    }
+
+    if ( operator != "" )
     {
         if ( firstNumber == "" )
         {
@@ -123,16 +152,24 @@ function handleEquals()
 
         if ( secondNumber == "" )
         {
-            secondNumber = firstNumber;
+            if ( implicitNumber == "" )
+            {
+                implicitNumber = firstNumber;
+            }
+
+            secondNumber = implicitNumber;
         }
 
         // perform the operation
         firstNumber = operate(firstNumber, secondNumber, operator);
         $('#result').text(firstNumber);
         firstNumber = "";
+        secondNumber = "";
+        implicitOperator = operator;
+        operator = "";
     }
     
-    $('#history').text(" ");
+    $('#history').text("");
 }
 
 function handleClear()
@@ -141,15 +178,35 @@ function handleClear()
     $('#history').text("");
     firstNumber = "";
     secondNumber = "";
+    implicitNumber = "";
     operator = "";
+    implicitOperator = "";
+    lastChar = "";
     error = false;
+}
+
+function handleClearEntry()
+{
+    $('#result').text(0);
+
+    if ( operator == "" )
+    {
+        firstNumber = $('#result').text();
+    }
+    else
+    {
+        secondNumber = $('#result').text();
+    }
 }
 
 function handleBackspace()
 {
     let result = $('#result').text();
-    let reset = false;
     
+    // Only allow backspace when entering a number
+    if ( firstNumber == "" ||
+         ( operator != "" && secondNumber == "" ) ) { return; } // do nothing
+
     if ( result.length > 1 )
     {
         $('#result').text(result.slice(0,-1));
@@ -158,23 +215,70 @@ function handleBackspace()
         if ( $('#result').text() == '-' )
         {
             $('#result').text(0);
-            reset = true; // allow a new number to replace 0
         }
     }
     else if ( result != "0" )
     {
         $('#result').text(0);
-        reset = true; // allow a new number to replace 0
     }
     
     if ( operator == "" )
     {
-        firstNumber = reset ? "" : $('#result').text();
+        firstNumber = $('#result').text();
     }
     else
     {
-        secondNumber = reset ? "" : $('#result').text();
+        secondNumber = $('#result').text();
+        implicitNumber = secondNumber;
     }
+}
+
+function handleInput(ch)
+{
+    if ( error ) { handleClear(); }
+
+    switch ( ch )
+    {
+      case '+':
+      case '-':
+      case '*':
+      case '/':
+        handleOperator(ch);
+        break;
+
+      case '=':
+      case 'Enter':
+        handleEquals();
+        break;
+
+      case 'Backspace':
+        handleBackspace();
+        break;
+
+      case 'Delete':
+        handleClearEntry();
+        break;
+
+      case 'Escape':
+        handleClear();
+        break;
+
+      case "0":
+      case "1":
+      case "2":
+      case "3":
+      case "4":
+      case "5":
+      case "6":
+      case "7":
+      case "8":
+      case "9":
+      case ".":
+        handleNumeric(ch);
+        break;
+    }
+
+    lastChar = ch;
 }
 
 $(document).ready(function()
@@ -184,68 +288,11 @@ $(document).ready(function()
 
     $('button').on('click', function()
     {
-        if ( error ) { handleClear(); }
-
-        switch ( this.name )
-        {
-          case '+':
-          case '-':
-          case '*':
-          case '/':
-            handleOperator(this.name);
-            break;
-
-          case '=':
-            handleEquals();
-            break;
-
-          case 'Backspace':
-            handleBackspace();
-            break;
-
-          case 'C':
-            handleClear();
-            break;
-
-          default:
-            handleNumeric(this.name);
-            break;
-        }
+        handleInput(this.name);
     });
     
-    $(document).keypress(function(event)
+    $(document).keydown(function(event)
     {
-        if ( error ) { handleClear(); }
-
-        switch ( event.which )
-        {
-          case 13: handleEquals(); break;
-          case 42: handleOperator('*'); break;
-          case 43: handleOperator('+'); break;
-          case 45: handleOperator('-'); break;
-          case 47: handleOperator('/'); break;
-          case 48: handleNumeric('0'); break;
-          case 49: handleNumeric('1'); break;
-          case 50: handleNumeric('2'); break;
-          case 51: handleNumeric('3'); break;
-          case 52: handleNumeric('4'); break;
-          case 53: handleNumeric('5'); break;
-          case 54: handleNumeric('6'); break;
-          case 55: handleNumeric('7'); break;
-          case 56: handleNumeric('8'); break;
-          case 57: handleNumeric('9'); break;
-          case 46: handleNumeric('.'); break;
-          case 99: // c
-          case 67: // C
-            handleClear();
-            break;
-          case 100: // d
-          case 68: // D
-            handleBackspace();
-            break;
-          default:
-            //alert('Handler for .keypress() called. - ' + event.which);
-            break;
-        }
+        handleInput(event.key);
     });
 });

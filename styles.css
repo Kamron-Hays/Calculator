@@ -1,11 +1,15 @@
 body {
-  border: 3px silver outset;
+  border: 3px grey solid;
   float: left;
 }
 
 button {
   height: 25px;
   width: 30px;
+}
+
+#CE {
+  padding: 0;
 }
 
 div {
@@ -15,7 +19,7 @@ div {
 }
 
 #display {
-  border: 2px silver inset;
+  border: 1px grey solid;
   margin-top: 3px;
   margin-left: 4px;
   margin-right: 4px;
@@ -43,3 +47,4 @@ div {
 #clear {
   text-align: right;
 }
+
